@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable, Modal, FlatList } from 'react-native';
+import Animated from 'react-native-reanimated';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Colors } from '../constants/colors';
 import { useDatabase } from '../hooks/useDatabase';
 import { categoryRepo } from '../repositories/categoryRepo';
+import { useFadeIn } from '../hooks/useAnimations';
 import type { Category } from '../models';
 
 interface CategoryPickerProps {
@@ -16,6 +18,7 @@ export function CategoryPicker({ selectedId, onSelect }: CategoryPickerProps) {
   const [visible, setVisible] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [selected, setSelected] = useState<Category | null>(null);
+  const { animatedStyle: modalFadeStyle, enter: enterModal } = useFadeIn(50, 300);
 
   useEffect(() => {
     if (!db) return;
@@ -24,6 +27,12 @@ export function CategoryPicker({ selectedId, onSelect }: CategoryPickerProps) {
       setSelected(categoryRepo.getById(db, selectedId));
     }
   }, [db, selectedId]);
+
+  useEffect(() => {
+    if (visible) {
+      enterModal();
+    }
+  }, [visible]);
 
   return (
     <>
@@ -40,7 +49,7 @@ export function CategoryPicker({ selectedId, onSelect }: CategoryPickerProps) {
       </Pressable>
 
       <Modal visible={visible} animationType="slide" presentationStyle="pageSheet">
-        <View style={styles.modal}>
+        <Animated.View style={[styles.modal, modalFadeStyle]}>
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>Choose Category</Text>
             <Pressable onPress={() => setVisible(false)} hitSlop={12}>
@@ -75,7 +84,7 @@ export function CategoryPicker({ selectedId, onSelect }: CategoryPickerProps) {
               </Pressable>
             )}
           />
-        </View>
+        </Animated.View>
       </Modal>
     </>
   );

@@ -1,8 +1,11 @@
-import React from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import Animated from 'react-native-reanimated';
 import { Colors } from '../constants/colors';
 import { Avatar } from './Avatar';
+import { AnimatedPressable } from './AnimatedPressable';
 import { formatCurrency } from '../utils/formatCurrency';
+import { useStaggeredEntry } from '../hooks/useAnimations';
 
 interface FriendRowProps {
   name: string;
@@ -11,12 +14,20 @@ interface FriendRowProps {
   currency?: string;
   imageUri?: string | null;
   onPress?: () => void;
+  index?: number;
 }
 
-export function FriendRow({ name, email, balance = 0, currency = 'USD', imageUri, onPress }: FriendRowProps) {
+export function FriendRow({ name, email, balance = 0, currency = 'USD', imageUri, onPress, index = 0 }: FriendRowProps) {
+  const { animatedStyle, enter } = useStaggeredEntry(index);
+
+  useEffect(() => {
+    enter();
+  }, []);
+
   return (
-    <Pressable
-      style={({ pressed }) => [styles.container, pressed && styles.pressed]}
+    <Animated.View style={animatedStyle}>
+    <AnimatedPressable
+      style={styles.container}
       onPress={onPress}
     >
       <Avatar name={name} imageUri={imageUri} size={44} />
@@ -37,7 +48,8 @@ export function FriendRow({ name, email, balance = 0, currency = 'USD', imageUri
       {balance === 0 && (
         <Text style={styles.settled}>settled up</Text>
       )}
-    </Pressable>
+    </AnimatedPressable>
+    </Animated.View>
   );
 }
 

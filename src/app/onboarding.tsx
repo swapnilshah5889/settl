@@ -1,20 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   TextInput,
   StyleSheet,
-  Pressable,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
 } from 'react-native';
+import Animated from 'react-native-reanimated';
 import { router } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Colors } from '../constants/colors';
 import { useDatabase } from '../hooks/useDatabase';
 import { userRepo } from '../repositories/userRepo';
 import { CURRENCIES } from '../constants/currencies';
+import { useFadeIn } from '../hooks/useAnimations';
+import { AnimatedPressable } from '../components/AnimatedPressable';
 
 export default function Onboarding() {
   const { db, refreshUser } = useDatabase();
@@ -23,6 +25,18 @@ export default function Onboarding() {
   const [email, setEmail] = useState('');
   const [currency, setCurrency] = useState('USD');
   const [showCurrencies, setShowCurrencies] = useState(false);
+
+  const heroFade = useFadeIn(0, 600);
+  const nameFade = useFadeIn(150);
+  const emailFade = useFadeIn(250);
+  const currencyFade = useFadeIn(350);
+
+  useEffect(() => {
+    heroFade.enter();
+    nameFade.enter();
+    emailFade.enter();
+    currencyFade.enter();
+  }, []);
 
   const canSubmit = firstName.trim().length > 0;
 
@@ -44,84 +58,93 @@ export default function Onboarding() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
-        <View style={styles.hero}>
+        <Animated.View style={[styles.hero, heroFade.animatedStyle]}>
           <View style={styles.iconCircle}>
             <MaterialCommunityIcons name="handshake" size={48} color={Colors.primary} />
           </View>
           <Text style={styles.title}>Welcome to Settl</Text>
           <Text style={styles.subtitle}>Split expenses with friends, effortlessly</Text>
-        </View>
+        </Animated.View>
 
         <View style={styles.form}>
-          <Text style={styles.label}>What's your name?</Text>
-          <View style={styles.nameRow}>
-            <TextInput
-              style={[styles.input, styles.halfInput]}
-              placeholder="First name"
-              placeholderTextColor={Colors.textLight}
-              value={firstName}
-              onChangeText={setFirstName}
-              autoFocus
-            />
-            <TextInput
-              style={[styles.input, styles.halfInput]}
-              placeholder="Last name"
-              placeholderTextColor={Colors.textLight}
-              value={lastName}
-              onChangeText={setLastName}
-            />
-          </View>
-
-          <Text style={styles.label}>Email (optional)</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="you@example.com"
-            placeholderTextColor={Colors.textLight}
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
-
-          <Text style={styles.label}>Default currency</Text>
-          <Pressable
-            style={styles.currencyPicker}
-            onPress={() => setShowCurrencies(!showCurrencies)}
-          >
-            <Text style={styles.currencyText}>
-              {CURRENCIES.find(c => c.code === currency)?.symbol} {currency}
-            </Text>
-            <MaterialCommunityIcons
-              name={showCurrencies ? 'chevron-up' : 'chevron-down'}
-              size={20}
-              color={Colors.textSecondary}
-            />
-          </Pressable>
-          {showCurrencies && (
-            <View style={styles.currencyList}>
-              {CURRENCIES.map((c) => (
-                <Pressable
-                  key={c.code}
-                  style={[styles.currencyItem, c.code === currency && styles.currencySelected]}
-                  onPress={() => { setCurrency(c.code); setShowCurrencies(false); }}
-                >
-                  <Text style={styles.currencySymbol}>{c.symbol}</Text>
-                  <Text style={styles.currencyCode}>{c.code}</Text>
-                  <Text style={styles.currencyName}>{c.name}</Text>
-                </Pressable>
-              ))}
+          <Animated.View style={nameFade.animatedStyle}>
+            <Text style={styles.label}>What's your name?</Text>
+            <View style={styles.nameRow}>
+              <TextInput
+                style={[styles.input, styles.halfInput]}
+                placeholder="First name"
+                placeholderTextColor={Colors.textLight}
+                value={firstName}
+                onChangeText={setFirstName}
+                autoFocus
+              />
+              <TextInput
+                style={[styles.input, styles.halfInput]}
+                placeholder="Last name"
+                placeholderTextColor={Colors.textLight}
+                value={lastName}
+                onChangeText={setLastName}
+              />
             </View>
-          )}
+          </Animated.View>
+
+          <Animated.View style={emailFade.animatedStyle}>
+            <Text style={styles.label}>Email (optional)</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="you@example.com"
+              placeholderTextColor={Colors.textLight}
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+          </Animated.View>
+
+          <Animated.View style={currencyFade.animatedStyle}>
+            <Text style={styles.label}>Default currency</Text>
+            <AnimatedPressable
+              style={styles.currencyPicker}
+              onPress={() => setShowCurrencies(!showCurrencies)}
+              scaleValue={0.98}
+            >
+              <Text style={styles.currencyText}>
+                {CURRENCIES.find(c => c.code === currency)?.symbol} {currency}
+              </Text>
+              <MaterialCommunityIcons
+                name={showCurrencies ? 'chevron-up' : 'chevron-down'}
+                size={20}
+                color={Colors.textSecondary}
+              />
+            </AnimatedPressable>
+            {showCurrencies && (
+              <View style={styles.currencyList}>
+                {CURRENCIES.map((c) => (
+                  <AnimatedPressable
+                    key={c.code}
+                    style={[styles.currencyItem, c.code === currency && styles.currencySelected]}
+                    onPress={() => { setCurrency(c.code); setShowCurrencies(false); }}
+                    scaleValue={0.97}
+                  >
+                    <Text style={styles.currencySymbol}>{c.symbol}</Text>
+                    <Text style={styles.currencyCode}>{c.code}</Text>
+                    <Text style={styles.currencyName}>{c.name}</Text>
+                  </AnimatedPressable>
+                ))}
+              </View>
+            )}
+          </Animated.View>
         </View>
 
-        <Pressable
+        <AnimatedPressable
           style={[styles.button, !canSubmit && styles.buttonDisabled]}
           onPress={handleSubmit}
           disabled={!canSubmit}
+          scaleValue={0.95}
         >
           <Text style={styles.buttonText}>Get Started</Text>
           <MaterialCommunityIcons name="arrow-right" size={20} color={Colors.white} />
-        </Pressable>
+        </AnimatedPressable>
       </ScrollView>
     </KeyboardAvoidingView>
   );

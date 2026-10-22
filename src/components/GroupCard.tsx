@@ -1,8 +1,11 @@
-import React from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import Animated from 'react-native-reanimated';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Colors } from '../constants/colors';
+import { AnimatedPressable } from './AnimatedPressable';
 import { formatCurrency } from '../utils/formatCurrency';
+import { useStaggeredEntry } from '../hooks/useAnimations';
 
 const GROUP_TYPE_ICONS: Record<string, string> = {
   home: 'home',
@@ -25,15 +28,22 @@ interface GroupCardProps {
   balance?: number;
   currency?: string;
   onPress?: () => void;
+  index?: number;
 }
 
-export function GroupCard({ name, groupType, memberCount, balance = 0, currency = 'USD', onPress }: GroupCardProps) {
+export function GroupCard({ name, groupType, memberCount, balance = 0, currency = 'USD', onPress, index = 0 }: GroupCardProps) {
   const icon = GROUP_TYPE_ICONS[groupType] || 'account-group';
   const color = GROUP_TYPE_COLORS[groupType] || Colors.primary;
+  const { animatedStyle, enter } = useStaggeredEntry(index);
+
+  useEffect(() => {
+    enter();
+  }, []);
 
   return (
-    <Pressable
-      style={({ pressed }) => [styles.container, pressed && styles.pressed]}
+    <Animated.View style={animatedStyle}>
+    <AnimatedPressable
+      style={styles.container}
       onPress={onPress}
     >
       <View style={[styles.iconContainer, { backgroundColor: color + '20' }]}>
@@ -51,7 +61,8 @@ export function GroupCard({ name, groupType, memberCount, balance = 0, currency 
         </View>
       )}
       <MaterialCommunityIcons name="chevron-right" size={22} color={Colors.gray400} />
-    </Pressable>
+    </AnimatedPressable>
+    </Animated.View>
   );
 }
 

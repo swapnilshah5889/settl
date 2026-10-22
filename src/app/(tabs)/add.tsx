@@ -10,6 +10,7 @@ import {
   Platform,
   Alert,
 } from 'react-native';
+import Animated from 'react-native-reanimated';
 import { router, useFocusEffect } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -17,7 +18,9 @@ import { Colors } from '../../constants/colors';
 import { AmountInput } from '../../components/AmountInput';
 import { CategoryPicker } from '../../components/CategoryPicker';
 import { PersonPicker } from '../../components/PersonPicker';
+import { AnimatedPressable } from '../../components/AnimatedPressable';
 import { useDatabase } from '../../hooks/useDatabase';
+import { useFadeIn } from '../../hooks/useAnimations';
 import { friendRepo } from '../../repositories/friendRepo';
 import { groupRepo } from '../../repositories/groupRepo';
 import { expenseRepo } from '../../repositories/expenseRepo';
@@ -40,6 +43,13 @@ export default function AddExpense() {
   const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
   const [exactAmounts, setExactAmounts] = useState<Map<number | null, string>>(new Map());
   const [percentages, setPercentages] = useState<Map<number | null, string>>(new Map());
+  const amountAnim = useFadeIn(0, 300);
+  const detailsAnim = useFadeIn(100, 300);
+
+  useEffect(() => {
+    amountAnim.enter();
+    detailsAnim.enter();
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -167,16 +177,16 @@ export default function AddExpense() {
           contentContainerStyle={styles.scroll}
           keyboardShouldPersistTaps="handled"
         >
-          <View style={styles.amountSection}>
+          <Animated.View style={[styles.amountSection, amountAnim.animatedStyle]}>
             <AmountInput
               value={amount}
               onChangeText={setAmount}
               currency={currentUser?.default_currency ?? 'USD'}
               large
             />
-          </View>
+          </Animated.View>
 
-          <View style={styles.card}>
+          <Animated.View style={[styles.card, detailsAnim.animatedStyle]}>
             <TextInput
               style={styles.descriptionInput}
               placeholder="What was it for?"
@@ -229,7 +239,7 @@ export default function AddExpense() {
               onChangeText={setNotes}
               multiline
             />
-          </View>
+          </Animated.View>
 
           <View style={styles.card}>
             <Text style={styles.fieldLabel}>Paid by</Text>
@@ -323,13 +333,13 @@ export default function AddExpense() {
             )}
           </View>
 
-          <Pressable
+          <AnimatedPressable
             style={[styles.saveButton, (!description.trim() || !amount) && styles.saveButtonDisabled]}
             onPress={handleSave}
           >
             <MaterialCommunityIcons name="check" size={22} color={Colors.white} />
             <Text style={styles.saveButtonText}>Save Expense</Text>
-          </Pressable>
+          </AnimatedPressable>
 
           <View style={{ height: 40 }} />
         </ScrollView>

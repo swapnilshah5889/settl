@@ -1,11 +1,14 @@
 import React, { useCallback, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, RefreshControl } from 'react-native';
+import Animated from 'react-native-reanimated';
 import { useFocusEffect, router } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '../../constants/colors';
 import { GroupCard } from '../../components/GroupCard';
+import { AnimatedPressable } from '../../components/AnimatedPressable';
 import { useDatabase } from '../../hooks/useDatabase';
+import { useFadeIn } from '../../hooks/useAnimations';
 import { groupRepo } from '../../repositories/groupRepo';
 import { getGroupBalances } from '../../services/balanceCalculator';
 import type { Group } from '../../models';
@@ -14,6 +17,7 @@ export default function GroupsScreen() {
   const { db, currentUser } = useDatabase();
   const [groups, setGroups] = useState<(Group & { memberCount: number; balance: number })[]>([]);
   const [refreshing, setRefreshing] = useState(false);
+  const headerAnim = useFadeIn(0, 400);
 
   const loadGroups = useCallback(() => {
     if (!db) return;
@@ -29,6 +33,7 @@ export default function GroupsScreen() {
 
   useFocusEffect(
     useCallback(() => {
+      headerAnim.enter();
       loadGroups();
     }, [loadGroups])
   );
@@ -41,12 +46,12 @@ export default function GroupsScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <View style={styles.header}>
+      <Animated.View style={[styles.header, headerAnim.animatedStyle]}>
         <Text style={styles.title}>Groups</Text>
         <Pressable style={styles.addBtn} onPress={() => router.push('/group/create')}>
           <MaterialCommunityIcons name="plus" size={22} color={Colors.white} />
         </Pressable>
-      </View>
+      </Animated.View>
 
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -60,15 +65,16 @@ export default function GroupsScreen() {
             <MaterialCommunityIcons name="account-group-outline" size={56} color={Colors.gray300} />
             <Text style={styles.emptyText}>No groups yet</Text>
             <Text style={styles.emptySubtext}>Create a group to start splitting expenses</Text>
-            <Pressable style={styles.emptyButton} onPress={() => router.push('/group/create')}>
+            <AnimatedPressable style={styles.emptyButton} onPress={() => router.push('/group/create')}>
               <MaterialCommunityIcons name="plus" size={18} color={Colors.white} />
               <Text style={styles.emptyButtonText}>Create Group</Text>
-            </Pressable>
+            </AnimatedPressable>
           </View>
         ) : (
-          groups.map((group) => (
+          groups.map((group, i) => (
             <GroupCard
               key={group.id}
+              index={i}
               name={group.name}
               groupType={group.group_type}
               memberCount={group.memberCount}

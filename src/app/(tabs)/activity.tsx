@@ -1,11 +1,13 @@
 import React, { useCallback, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, RefreshControl } from 'react-native';
+import Animated from 'react-native-reanimated';
 import { useFocusEffect, router } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '../../constants/colors';
 import { ExpenseRow } from '../../components/ExpenseRow';
 import { useDatabase } from '../../hooks/useDatabase';
+import { useFadeIn } from '../../hooks/useAnimations';
 import { activityRepo } from '../../repositories/activityRepo';
 import type { ActivityItem } from '../../models';
 
@@ -13,6 +15,7 @@ export default function ActivityScreen() {
   const { db } = useDatabase();
   const [items, setItems] = useState<ActivityItem[]>([]);
   const [refreshing, setRefreshing] = useState(false);
+  const headerAnim = useFadeIn(0, 400);
 
   const loadActivity = useCallback(() => {
     if (!db) return;
@@ -21,6 +24,7 @@ export default function ActivityScreen() {
 
   useFocusEffect(
     useCallback(() => {
+      headerAnim.enter();
       loadActivity();
     }, [loadActivity])
   );
@@ -33,9 +37,9 @@ export default function ActivityScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <View style={styles.header}>
+      <Animated.View style={[styles.header, headerAnim.animatedStyle]}>
         <Text style={styles.title}>Activity</Text>
-      </View>
+      </Animated.View>
 
       {items.length === 0 ? (
         <View style={styles.empty}>
@@ -51,8 +55,9 @@ export default function ActivityScreen() {
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.primary} />
           }
           contentContainerStyle={styles.list}
-          renderItem={({ item }) => (
+          renderItem={({ item, index }) => (
             <ExpenseRow
+              index={index}
               description={item.description}
               amount={item.amount}
               currency={item.currency}

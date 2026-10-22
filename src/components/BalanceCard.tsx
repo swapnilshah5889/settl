@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import Animated from 'react-native-reanimated';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Colors } from '../constants/colors';
 import { formatCurrency } from '../utils/formatCurrency';
+import { useFadeIn } from '../hooks/useAnimations';
 
 interface BalanceCardProps {
   owe: number;
@@ -12,9 +14,14 @@ interface BalanceCardProps {
 
 export function BalanceCard({ owe, owed, currency = 'USD' }: BalanceCardProps) {
   const net = owed - owe;
+  const { animatedStyle: fadeStyle, enter } = useFadeIn(0, 500);
+
+  useEffect(() => {
+    enter();
+  }, []);
 
   return (
-    <View style={styles.container}>
+    <Animated.View style={[styles.container, fadeStyle]}>
       <View style={styles.header}>
         <Text style={styles.title}>Total Balance</Text>
         <Text style={[styles.netAmount, { color: net >= 0 ? Colors.owed : Colors.owes }]}>
@@ -42,7 +49,7 @@ export function BalanceCard({ owe, owed, currency = 'USD' }: BalanceCardProps) {
           </View>
         </View>
       </View>
-    </View>
+    </Animated.View>
   );
 }
 

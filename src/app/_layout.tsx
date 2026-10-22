@@ -13,6 +13,7 @@ export default function RootLayout() {
           headerShown: false,
           contentStyle: { backgroundColor: Colors.background },
           animation: 'slide_from_right',
+          animationDuration: 250,
         }}
       >
         <Stack.Screen name="(tabs)" />
@@ -22,11 +23,11 @@ export default function RootLayout() {
         />
         <Stack.Screen
           name="group/create"
-          options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
+          options={{ presentation: 'modal', animation: 'fade_from_bottom' }}
         />
         <Stack.Screen
           name="friend/add"
-          options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
+          options={{ presentation: 'modal', animation: 'fade_from_bottom' }}
         />
         <Stack.Screen name="group/[id]" />
         <Stack.Screen name="group/edit/[id]" />
@@ -34,7 +35,7 @@ export default function RootLayout() {
         <Stack.Screen name="expense/edit/[id]" />
         <Stack.Screen
           name="settle/[friendId]"
-          options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
+          options={{ presentation: 'modal', animation: 'fade_from_bottom' }}
         />
       </Stack>
     </DatabaseProvider>

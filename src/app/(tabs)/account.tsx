@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,11 +8,14 @@ import {
   Pressable,
   Alert,
 } from 'react-native';
+import Animated from 'react-native-reanimated';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '../../constants/colors';
 import { Avatar } from '../../components/Avatar';
+import { AnimatedPressable } from '../../components/AnimatedPressable';
 import { useDatabase } from '../../hooks/useDatabase';
+import { useFadeIn } from '../../hooks/useAnimations';
 import { userRepo } from '../../repositories/userRepo';
 
 export default function AccountScreen() {
@@ -21,6 +24,13 @@ export default function AccountScreen() {
   const [firstName, setFirstName] = useState(currentUser?.first_name ?? '');
   const [lastName, setLastName] = useState(currentUser?.last_name ?? '');
   const [email, setEmail] = useState(currentUser?.email ?? '');
+  const profileAnim = useFadeIn(100, 500);
+  const menuAnim = useFadeIn(200, 400);
+
+  useEffect(() => {
+    profileAnim.enter();
+    menuAnim.enter();
+  }, []);
 
   const handleSave = async () => {
     if (!db || !currentUser) return;
@@ -44,64 +54,66 @@ export default function AccountScreen() {
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
         <Text style={styles.title}>Account</Text>
 
-        <View style={styles.profileCard}>
+        <Animated.View style={[styles.profileCard, profileAnim.animatedStyle]}>
           <Avatar name={fullName} size={72} imageUri={currentUser.image_uri} />
           <Text style={styles.profileName}>{fullName}</Text>
           {currentUser.email && <Text style={styles.profileEmail}>{currentUser.email}</Text>}
           <View style={styles.currencyBadge}>
             <Text style={styles.currencyBadgeText}>{currentUser.default_currency}</Text>
           </View>
-        </View>
+        </Animated.View>
 
-        {editing ? (
-          <View style={styles.editCard}>
-            <Text style={styles.editLabel}>First Name</Text>
-            <TextInput
-              style={styles.editInput}
-              value={firstName}
-              onChangeText={setFirstName}
-              placeholder="First name"
-              placeholderTextColor={Colors.textLight}
-            />
-            <Text style={styles.editLabel}>Last Name</Text>
-            <TextInput
-              style={styles.editInput}
-              value={lastName}
-              onChangeText={setLastName}
-              placeholder="Last name"
-              placeholderTextColor={Colors.textLight}
-            />
-            <Text style={styles.editLabel}>Email</Text>
-            <TextInput
-              style={styles.editInput}
-              value={email}
-              onChangeText={setEmail}
-              placeholder="Email"
-              placeholderTextColor={Colors.textLight}
-              keyboardType="email-address"
-              autoCapitalize="none"
-            />
-            <View style={styles.editActions}>
-              <Pressable style={styles.cancelBtn} onPress={() => setEditing(false)}>
-                <Text style={styles.cancelBtnText}>Cancel</Text>
-              </Pressable>
-              <Pressable style={styles.saveBtn} onPress={handleSave}>
-                <Text style={styles.saveBtnText}>Save</Text>
-              </Pressable>
+        <Animated.View style={menuAnim.animatedStyle}>
+          {editing ? (
+            <View style={styles.editCard}>
+              <Text style={styles.editLabel}>First Name</Text>
+              <TextInput
+                style={styles.editInput}
+                value={firstName}
+                onChangeText={setFirstName}
+                placeholder="First name"
+                placeholderTextColor={Colors.textLight}
+              />
+              <Text style={styles.editLabel}>Last Name</Text>
+              <TextInput
+                style={styles.editInput}
+                value={lastName}
+                onChangeText={setLastName}
+                placeholder="Last name"
+                placeholderTextColor={Colors.textLight}
+              />
+              <Text style={styles.editLabel}>Email</Text>
+              <TextInput
+                style={styles.editInput}
+                value={email}
+                onChangeText={setEmail}
+                placeholder="Email"
+                placeholderTextColor={Colors.textLight}
+                keyboardType="email-address"
+                autoCapitalize="none"
+              />
+              <View style={styles.editActions}>
+                <Pressable style={styles.cancelBtn} onPress={() => setEditing(false)}>
+                  <Text style={styles.cancelBtnText}>Cancel</Text>
+                </Pressable>
+                <Pressable style={styles.saveBtn} onPress={handleSave}>
+                  <Text style={styles.saveBtnText}>Save</Text>
+                </Pressable>
+              </View>
             </View>
-          </View>
-        ) : (
-          <Pressable style={styles.menuItem} onPress={() => {
-            setFirstName(currentUser.first_name);
-            setLastName(currentUser.last_name ?? '');
-            setEmail(currentUser.email ?? '');
-            setEditing(true);
-          }}>
-            <MaterialCommunityIcons name="account-edit" size={22} color={Colors.primary} />
-            <Text style={styles.menuText}>Edit Profile</Text>
-            <MaterialCommunityIcons name="chevron-right" size={20} color={Colors.gray400} />
-          </Pressable>
-        )}
+          ) : (
+            <AnimatedPressable style={styles.menuItem} onPress={() => {
+              setFirstName(currentUser.first_name);
+              setLastName(currentUser.last_name ?? '');
+              setEmail(currentUser.email ?? '');
+              setEditing(true);
+            }}>
+              <MaterialCommunityIcons name="account-edit" size={22} color={Colors.primary} />
+              <Text style={styles.menuText}>Edit Profile</Text>
+              <MaterialCommunityIcons name="chevron-right" size={20} color={Colors.gray400} />
+            </AnimatedPressable>
+          )}
+        </Animated.View>
 
         <View style={styles.infoSection}>
           <View style={styles.infoRow}>

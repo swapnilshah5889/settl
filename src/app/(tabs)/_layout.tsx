@@ -1,8 +1,24 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Tabs } from 'expo-router';
-import { View, StyleSheet, Platform } from 'react-native';
+import { StyleSheet, Platform } from 'react-native';
+import Animated from 'react-native-reanimated';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Colors } from '../../constants/colors';
+import { useScaleIn } from '../../hooks/useAnimations';
+
+function TabFAB() {
+  const { animatedStyle, enter } = useScaleIn(300);
+
+  useEffect(() => {
+    enter();
+  }, []);
+
+  return (
+    <Animated.View style={[styles.addButton, animatedStyle]}>
+      <MaterialCommunityIcons name="plus" size={28} color={Colors.white} />
+    </Animated.View>
+  );
+}
 
 export default function TabLayout() {
   return (
@@ -52,11 +68,7 @@ export default function TabLayout() {
         name="add"
         options={{
           title: '',
-          tabBarIcon: () => (
-            <View style={styles.addButton}>
-              <MaterialCommunityIcons name="plus" size={28} color={Colors.white} />
-            </View>
-          ),
+          tabBarIcon: () => <TabFAB />,
         }}
       />
       <Tabs.Screen

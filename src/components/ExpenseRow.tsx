@@ -1,9 +1,12 @@
-import React from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import Animated from 'react-native-reanimated';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Colors } from '../constants/colors';
+import { AnimatedPressable } from './AnimatedPressable';
 import { formatCurrency } from '../utils/formatCurrency';
 import { formatDate } from '../utils/dateUtils';
+import { useStaggeredEntry } from '../hooks/useAnimations';
 
 interface ExpenseRowProps {
   description: string;
@@ -15,6 +18,7 @@ interface ExpenseRowProps {
   yourShare: number;
   isPayment?: boolean;
   onPress?: () => void;
+  index?: number;
 }
 
 export function ExpenseRow({
@@ -27,10 +31,18 @@ export function ExpenseRow({
   yourShare,
   isPayment,
   onPress,
+  index = 0,
 }: ExpenseRowProps) {
+  const { animatedStyle, enter } = useStaggeredEntry(index);
+
+  useEffect(() => {
+    enter();
+  }, []);
+
   return (
-    <Pressable
-      style={({ pressed }) => [styles.container, pressed && styles.pressed]}
+    <Animated.View style={animatedStyle}>
+    <AnimatedPressable
+      style={styles.container}
       onPress={onPress}
     >
       <View style={[styles.iconContainer, isPayment && styles.paymentIcon]}>
@@ -65,7 +77,8 @@ export function ExpenseRow({
           </>
         )}
       </View>
-    </Pressable>
+    </AnimatedPressable>
+    </Animated.View>
   );
 }
 

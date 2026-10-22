@@ -7,14 +7,17 @@ import {
   RefreshControl,
   Pressable,
 } from 'react-native';
+import Animated from 'react-native-reanimated';
 import { useFocusEffect, router } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '../../constants/colors';
 import { BalanceCard } from '../../components/BalanceCard';
 import { FriendRow } from '../../components/FriendRow';
+import { AnimatedPressable } from '../../components/AnimatedPressable';
 import { useDatabase } from '../../hooks/useDatabase';
 import { useFriends } from '../../hooks/useFriends';
+import { useFadeIn } from '../../hooks/useAnimations';
 import { getTotalBalance } from '../../services/balanceCalculator';
 
 export default function Dashboard() {
@@ -22,10 +25,14 @@ export default function Dashboard() {
   const { friends, refresh } = useFriends();
   const [balance, setBalance] = useState({ owe: 0, owed: 0 });
   const [refreshing, setRefreshing] = useState(false);
+  const headerAnim = useFadeIn(0, 400);
+  const settleAnim = useFadeIn(200, 400);
 
   useFocusEffect(
     useCallback(() => {
       if (!db) return;
+      headerAnim.enter();
+      settleAnim.enter();
       setBalance(getTotalBalance(db));
       refresh();
     }, [db])
@@ -45,7 +52,7 @@ export default function Dashboard() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <View style={styles.header}>
+      <Animated.View style={[styles.header, headerAnim.animatedStyle]}>
         <View>
           <Text style={styles.greeting}>Hello,</Text>
           <Text style={styles.name}>{currentUser?.first_name ?? 'there'}</Text>
@@ -56,7 +63,7 @@ export default function Dashboard() {
         >
           <MaterialCommunityIcons name="account-plus" size={22} color={Colors.primary} />
         </Pressable>
-      </View>
+      </Animated.View>
 
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -85,9 +92,10 @@ export default function Dashboard() {
             </View>
           ) : (
             <View style={styles.friendsList}>
-              {friends.map((friend) => (
+              {friends.map((friend, i) => (
                 <FriendRow
                   key={friend.id}
+                  index={i}
                   name={friend.last_name ? `${friend.first_name} ${friend.last_name}` : friend.first_name}
                   email={friend.email}
                   balance={friend.balance}
@@ -101,10 +109,10 @@ export default function Dashboard() {
         </View>
 
         {friendsWithDebts.length > 0 && (
-          <View style={styles.section}>
+          <Animated.View style={[styles.section, settleAnim.animatedStyle]}>
             <Text style={styles.sectionTitle}>Quick Settle Up</Text>
             {friendsWithDebts.map((friend) => (
-              <Pressable
+              <AnimatedPressable
                 key={friend.id}
                 style={styles.settleRow}
                 onPress={() => router.push(`/settle/${friend.id}`)}
@@ -126,9 +134,9 @@ export default function Dashboard() {
                 <View style={styles.settleBtn}>
                   <Text style={styles.settleBtnText}>Settle</Text>
                 </View>
-              </Pressable>
+              </AnimatedPressable>
             ))}
-          </View>
+          </Animated.View>
         )}
 
         <View style={{ height: 32 }} />
