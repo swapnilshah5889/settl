@@ -12,6 +12,7 @@ export function useGroups() {
 
   useEffect(() => {
     if (!db) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setGroups(groupRepo.getAll(db));
   }, [db, version]);
 

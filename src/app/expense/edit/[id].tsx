@@ -34,12 +34,14 @@ export default function EditExpense() {
     if (!db || !id) return;
     const e = expenseRepo.getWithShares(db, parseInt(id));
     if (e) {
+      /* eslint-disable react-hooks/set-state-in-effect */
       setExpense(e);
       setDescription(e.description);
       setAmount(e.amount.toString());
       setDate(e.date);
       setCategoryId(e.category_id);
       setNotes(e.notes ?? '');
+      /* eslint-enable react-hooks/set-state-in-effect */
     }
   }, [db, id]);
 

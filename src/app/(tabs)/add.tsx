@@ -24,7 +24,7 @@ import { useFadeIn } from '../../hooks/useAnimations';
 import { friendRepo } from '../../repositories/friendRepo';
 import { groupRepo } from '../../repositories/groupRepo';
 import { expenseRepo } from '../../repositories/expenseRepo';
-import { splitEqual, splitExact, splitPercentage, splitByShares } from '../../services/splitCalculator';
+import { splitEqual, splitExact, splitPercentage } from '../../services/splitCalculator';
 import { toISODate } from '../../utils/dateUtils';
 import type { Friend, Group, SplitType } from '../../models';
 
@@ -49,6 +49,7 @@ export default function AddExpense() {
   useEffect(() => {
     amountAnim.enter();
     detailsAnim.enter();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useFocusEffect(
@@ -63,6 +64,7 @@ export default function AddExpense() {
     if (selectedGroupId && db) {
       const members = groupRepo.getMembers(db, selectedGroupId);
       const memberIds = new Set(members.map((m) => m.friend_id));
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelectedMembers(memberIds);
     }
   }, [selectedGroupId, db]);

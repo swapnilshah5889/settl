@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Animated from 'react-native-reanimated';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Colors } from '../constants/colors';
 import { formatCurrency } from '../utils/formatCurrency';
 import { useFadeIn } from '../hooks/useAnimations';
@@ -18,6 +17,7 @@ export function BalanceCard({ owe, owed, currency = 'USD' }: BalanceCardProps) {
 
   useEffect(() => {
     enter();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

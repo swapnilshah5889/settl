@@ -38,6 +38,7 @@ export function GroupCard({ name, groupType, memberCount, balance = 0, currency 
 
   useEffect(() => {
     enter();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

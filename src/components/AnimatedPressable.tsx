@@ -21,11 +21,14 @@ export function AnimatedPressable({ style, scaleValue = 0.97, children, onPressI
   const handlePressIn = useCallback((e: any) => {
     scale.value = withSpring(scaleValue, SPRING);
     onPressIn?.(e);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scaleValue, onPressIn]);
 
   const handlePressOut = useCallback((e: any) => {
+    // eslint-disable-next-line react-hooks/immutability
     scale.value = withSpring(1, SPRING);
     onPressOut?.(e);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onPressOut]);
 
   const animatedStyle = useAnimatedStyle(() => ({

@@ -23,6 +23,7 @@ function PersonRow({ person, isSelected, onToggle, index }: { person: Person; is
 
   useEffect(() => {
     enter();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

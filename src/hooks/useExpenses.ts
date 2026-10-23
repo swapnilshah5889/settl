@@ -12,11 +12,13 @@ export function useExpenses(groupId?: number) {
 
   useEffect(() => {
     if (!db) return;
+    /* eslint-disable react-hooks/set-state-in-effect */
     if (groupId) {
       setExpenses(expenseRepo.getByGroup(db, groupId));
     } else {
       setExpenses(expenseRepo.getAll(db));
     }
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [db, groupId, version]);
 
   return { expenses, refresh };

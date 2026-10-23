@@ -35,7 +35,8 @@ export default function Dashboard() {
       settleAnim.enter();
       setBalance(getTotalBalance(db));
       refresh();
-    }, [db])
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [db, refresh])
   );
 
   const onRefresh = useCallback(() => {

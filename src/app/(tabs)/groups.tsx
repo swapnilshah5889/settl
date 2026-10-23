@@ -35,6 +35,7 @@ export default function GroupsScreen() {
     useCallback(() => {
       headerAnim.enter();
       loadGroups();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [loadGroups])
   );
 

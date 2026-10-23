@@ -8,7 +8,6 @@ import { Avatar } from '../../components/Avatar';
 import { ExpenseRow } from '../../components/ExpenseRow';
 import { useDatabase } from '../../hooks/useDatabase';
 import { groupRepo } from '../../repositories/groupRepo';
-import { expenseRepo } from '../../repositories/expenseRepo';
 import { getGroupBalances } from '../../services/balanceCalculator';
 import { simplifyDebts } from '../../services/debtSimplifier';
 import { formatCurrency } from '../../utils/formatCurrency';

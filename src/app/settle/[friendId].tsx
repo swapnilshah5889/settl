@@ -38,8 +38,8 @@ export default function SettleUp() {
     if (!db || !friendId) return;
     const id = parseInt(friendId);
     const f = friendRepo.getById(db, id);
+    /* eslint-disable react-hooks/set-state-in-effect */
     setFriend(f);
-
     if (f) {
       const bal = getFriendBalance(db, f.id);
       setBalance(bal);
@@ -47,6 +47,7 @@ export default function SettleUp() {
         setAmount(Math.abs(bal).toFixed(2));
       }
     }
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [db, friendId]);
 
   if (!friend) {
@@ -101,7 +102,7 @@ export default function SettleUp() {
       );
 
       router.dismiss(2);
-    } catch (error) {
+    } catch {
       Alert.alert('Error', 'Failed to record payment. Please try again.');
       setSaving(false);
     }

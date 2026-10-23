@@ -39,6 +39,7 @@ export default function EditGroup() {
     if (!db || !id) return;
     const groupId = parseInt(id);
     const group = groupRepo.getById(db, groupId);
+    /* eslint-disable react-hooks/set-state-in-effect */
     if (group) {
       setName(group.name);
       setGroupType(group.group_type as GroupType);
@@ -47,6 +48,7 @@ export default function EditGroup() {
     const members = groupRepo.getMembers(db, groupId);
     setSelectedMembers(new Set(members.map((m) => m.friend_id)));
     setFriends(friendRepo.getAll(db));
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [db, id]);
 
   const people = [

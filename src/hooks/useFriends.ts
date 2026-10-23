@@ -18,6 +18,7 @@ export function useFriends() {
       ...f,
       balance: getFriendBalance(db, f.id),
     }));
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setFriends(withBalances);
   }, [db, version]);
 

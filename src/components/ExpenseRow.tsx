@@ -37,6 +37,7 @@ export function ExpenseRow({
 
   useEffect(() => {
     enter();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

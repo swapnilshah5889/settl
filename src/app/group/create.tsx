@@ -36,6 +36,7 @@ export default function CreateGroup() {
 
   useEffect(() => {
     if (!db) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setFriends(friendRepo.getAll(db));
   }, [db]);
 

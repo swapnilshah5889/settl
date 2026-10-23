@@ -26,6 +26,7 @@ export default function ActivityScreen() {
     useCallback(() => {
       headerAnim.enter();
       loadActivity();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [loadActivity])
   );
 

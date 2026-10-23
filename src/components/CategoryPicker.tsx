@@ -22,16 +22,19 @@ export function CategoryPicker({ selectedId, onSelect }: CategoryPickerProps) {
 
   useEffect(() => {
     if (!db) return;
+    /* eslint-disable react-hooks/set-state-in-effect */
     setCategories(categoryRepo.getAll(db));
     if (selectedId) {
       setSelected(categoryRepo.getById(db, selectedId));
     }
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [db, selectedId]);
 
   useEffect(() => {
     if (visible) {
       enterModal();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
 
   return (

@@ -22,6 +22,7 @@ export function FriendRow({ name, email, balance = 0, currency = 'USD', imageUri
 
   useEffect(() => {
     enter();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

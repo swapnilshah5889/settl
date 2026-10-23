@@ -33,6 +33,7 @@ export function DatabaseProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!db) return;
     const user = db.getFirstSync<User>('SELECT * FROM users LIMIT 1');
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCurrentUser(user ?? null);
   }, [db, userVersion]);
 

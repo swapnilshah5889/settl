@@ -36,6 +36,7 @@ export default function Onboarding() {
     nameFade.enter();
     emailFade.enter();
     currencyFade.enter();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const canSubmit = firstName.trim().length > 0;
@@ -68,7 +69,7 @@ export default function Onboarding() {
 
         <View style={styles.form}>
           <Animated.View style={nameFade.animatedStyle}>
-            <Text style={styles.label}>What's your name?</Text>
+            <Text style={styles.label}>What&apos;s your name?</Text>
             <View style={styles.nameRow}>
               <TextInput
                 style={[styles.input, styles.halfInput]}

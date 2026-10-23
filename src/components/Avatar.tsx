@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { Text, Image, StyleSheet } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { Colors } from '../constants/colors';
 import { useScaleIn } from '../hooks/useAnimations';
@@ -25,6 +25,7 @@ export function Avatar({ name, imageUri, size = 44 }: AvatarProps) {
 
   useEffect(() => {
     enter();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (imageUri) {

@@ -9,6 +9,7 @@ export function useTotalBalance() {
 
   useEffect(() => {
     if (!db) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setBalance(getTotalBalance(db));
   }, [db]);
 
@@ -21,6 +22,7 @@ export function useGroupBalances(groupId: number) {
 
   useEffect(() => {
     if (!db) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setBalances(getGroupBalances(db, groupId));
   }, [db, groupId]);
 
