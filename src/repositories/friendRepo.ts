@@ -1,5 +1,6 @@
 import type { SQLiteDatabase } from 'expo-sqlite';
 import type { Friend } from '../models';
+import { getFriendBalance } from '../services/balanceCalculator';
 
 export const friendRepo = {
   getAll(db: SQLiteDatabase): Friend[] {
@@ -57,22 +58,6 @@ export const friendRepo = {
   },
 
   getBalance(db: SQLiteDatabase, friendId: number): number {
-    const result = db.getFirstSync<{ balance: number }>(
-      `SELECT COALESCE(SUM(
-        CASE WHEN s.friend_id IS NULL THEN s.paid_amount - s.owed_amount ELSE 0 END
-        - CASE WHEN s.friend_id = ? THEN s.paid_amount - s.owed_amount ELSE 0 END
-      ), 0) as balance
-      FROM expenses e
-      JOIN shares s ON s.expense_id = e.id
-      WHERE e.deleted_at IS NULL
-        AND e.id IN (
-          SELECT expense_id FROM shares WHERE friend_id = ?
-          INTERSECT
-          SELECT expense_id FROM shares WHERE friend_id IS NULL
-        )`,
-      friendId,
-      friendId
-    );
-    return result?.balance ?? 0;
+    return getFriendBalance(db, friendId);
   },
 };
